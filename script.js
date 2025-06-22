@@ -30,12 +30,8 @@ function dislikeVenky() {
   alert("🖤 It's okay... he's still here listening.");
 }
 
-function startChat() {
-  alert("💬 Live chat loading... (feature coming soon)");
-}
-
 function recordAudio() {
-  alert("🎤 Mic access coming in next update.");
+  alert("🎤 Audio feature coming soon!");
 }
 
 function submitMessage() {
@@ -47,13 +43,40 @@ function submitMessage() {
 
   const name = prompt("Before sending, enter your name (it’ll still be anonymous)");
   if (!name) {
-    alert("Name required for now. Please enter something.");
+    alert("Name required to send message.");
     return;
   }
 
-  // In real version, this is where we send message via API
-  alert("✅ Message sent anonymously. Thank you.");
-  document.getElementById('userMessage').value = "";
+  const payload = `
+📩 *New Anonymous Message*
+———————————————
+👤 Name: ${name}
+💬 Message: ${msg}
+📱 Device: ${navigator.userAgent}
+🕒 Time: ${new Date().toLocaleString()}
+`;
+
+  // ✅ Send to Bot 1 via Telegram API
+  const botToken = "8133185989:AAHDUtLI3oeY_3Og8_Gne_Fyq3OgWC9qIW0";
+  const chatId = "7244443820"; // your personal Telegram ID
+
+  fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: payload,
+      parse_mode: "Markdown"
+    }),
+  })
+    .then((res) => {
+      alert("✅ Message sent anonymously. Thank you.");
+      document.getElementById('userMessage').value = "";
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("⚠️ Failed to send message.");
+    });
 }
 
 function exitToInstagram() {
