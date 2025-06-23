@@ -2,42 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Venky Connect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talk to Venky</title>
   <link rel="stylesheet" href="style.css" />
+  <script defer src="main.js"></script>
 </head>
 <body>
-
-  <script src="cookie.js"></script>
-
   <div class="container">
-    <p class="note">This website is for those who feel lonely and disconnected. It’s completely anonymous — let's talk 💙</p>
+    <p class="top-note">This website is designed for people who feel lost and can’t express. Let’s talk. Anonymously.</p>
 
-    <div class="header">
-      <img src="https://picsum.photos/seed/tree/80" alt="Venky" class="avatar"/>
-      <span class="username">@canfcku2</span>
-      <p class="header-msg">let me know before it all ends !</p>
+    <div class="message-box">
+      <textarea id="message" placeholder="Write something here..."></textarea>
+      <button id="sendBtn" style="display:none;">Send</button>
     </div>
 
-    <textarea id="message" placeholder="Type something you never said..."></textarea>
-    <button id="sendBtn" disabled>Send</button>
-
-    <div class="reaction-text">How do you feel about Venky? (anonymous)</div>
-    <div class="reactions">
-      😡 😤 😐 🙂 😊 😍 🥰 ❤️
+    <div class="reaction-box">
+      <p class="reaction-title">Rate how you feel about Venky (Completely anonymous):</p>
+      <div class="emoji-list">
+        <span class="emoji">😡</span>
+        <span class="emoji">😤</span>
+        <span class="emoji">😏</span>
+        <span class="emoji">🙂</span>
+        <span class="emoji">😊</span>
+        <span class="emoji">😍</span>
+        <span class="emoji">🥰</span>
+        <span class="emoji">❤️</span>
+      </div>
     </div>
+
+    <button id="liveChatBtn" class="floating-btn">💬 Chat with Venky (Anonymous)</button>
+
+    <button class="footer-btn" onclick="window.location.href='https://instagram.com';">Go Back to Instagram</button>
   </div>
 
-  <button id="liveChatBtn" class="live-chat-btn">💬 Chat with Venky Live</button>
-  <button id="closeBtn" class="close-btn">Go back to Instagram</button>
-
-  <div id="namePopup" class="popup hidden">
-    <p><span class="star">*</span> Name (completely anonymous):</p>
-    <input id="nameInput" placeholder="Enter any name"/>
-    <button id="submitName">Submit</button>
+  <div id="namePrompt" class="popup hidden">
+    <p>Enter your Name — completely anonymous.</p>
+    <input type="text" id="nameInput" placeholder="Enter any name..." required />
+    <button id="nameSubmit">Continue</button>
   </div>
 
-  <script type="module" src="script.js"></script>
-  <script type="module" src="livechat.js"></script>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBiIEU8xsfxjYgGRjOvoP1RKtZKwN5i0yk",
+      authDomain: "kycupdateapp.firebaseapp.com",
+      projectId: "kycupdateapp",
+      storageBucket: "kycupdateapp.firebasestorage.app",
+      messagingSenderId: "508854921421",
+      appId: "1:508854921421:web:ebd92a2f9d69b62d54a184"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    window.firebaseDB = db;
+    window.firebaseRef = ref(db, 'chats');
+    window.firebasePush = push;
+  </script>
+
+  <!-- Chat logic -->
+  <script src="chat.js" defer></script>
 </body>
 </html>
