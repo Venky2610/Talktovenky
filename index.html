@@ -3,85 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Talk to Venky 💬</title>
+  <title>Venky Connect</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"/>
 </head>
 <body>
 
-  <!-- Cookie Consent -->
-  <div id="cookieBanner" class="cookie-banner">
-    <p>We use cookies to personalize content and improve your experience. By continuing, you agree to our use of cookies.</p>
-    <button onclick="acceptCookies()">Accept All 🍪</button>
-    <button onclick="openCookieSettings()">Customize Settings</button>
-  </div>
-  <div id="cookieModal" class="cookie-modal hidden">
-    <h3>Customize Cookie Preferences</h3>
-    <label><input type="checkbox" checked disabled> Strictly Necessary Cookies</label><br>
-    <label><input type="checkbox"> Analytics Cookies</label><br>
-    <label><input type="checkbox"> Functional Cookies</label><br>
-    <label><input type="checkbox"> Advertising Cookies</label><br>
-    <button onclick="closeCookieSettings()">Save Preferences</button>
-  </div>
-
-  <!-- 3-dot Menu -->
-  <div class="menu">
-    <div class="menu-icon" onclick="toggleMenu()">⋮</div>
-    <ul class="menu-items hidden" id="menuList">
-      <li onclick="showInfo('about')">About This Website</li>
-      <li onclick="showInfo('terms')">Terms & Conditions</li>
-      <li onclick="showInfo('privacy')">Privacy Policy</li>
-      <li onclick="showInfo('support')">Contact & Support</li>
-      <li onclick="showInfo('faq')">FAQs</li>
-      <li onclick="showInfo('feedback')">Feedback</li>
-      <li onclick="showInfo('rate')">Rate This Experience</li>
-    </ul>
-  </div>
-
-  <!-- Site Header -->
-  <header class="website-note">
-    This website is designed for people who feel alone, disconnected, and unable to open up. We’re here to listen, anonymously and without judgment.
-  </header>
-
-  <!-- Message Box -->
-  <section class="message-card">
-    <div class="user-bar">
-      <a href="https://instagram.com/_venky__21" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="ig-icon" />
-        @_venky__21
-      </a>
-    </div>
-    <div class="message-title">
-      Want to ask or tell something? Let me know before it all ends.
-    </div>
-    <div class="input-box">
-      <textarea id="userMessage" placeholder="Type something..."></textarea>
-      <div class="input-icons">
-        <button onclick="recordAudio()">🎤</button>
-        <input type="file" id="mediaUpload" multiple accept="image/*,video/*" />
-        <button onclick="submitMessage()">📤</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Interaction Buttons -->
-  <div class="interaction-buttons">
-    <button onclick="likeVenky()">👍 Like Venky</button>
-    <button onclick="dislikeVenky()">👎 Dislike Venky</button>
-    <button onclick="startChat()">💬 Chat with Venky</button>
-  </div>
-
-  <!-- Bottom Close -->
-  <div class="bottom-exit">
-    <button onclick="exitToInstagram()">Go Back to Instagram</button>
-  </div>
-
-  <!-- Modal -->
-  <div id="popupModal" class="modal hidden"></div>
-
-  <!-- Scripts -->
-  <script src="script.js"></script>
-  <script src="livechat.js"></script>
   <script src="cookie.js"></script>
+
+  <div class="container">
+    <p class="note">This website is for those who feel lonely and disconnected. It’s completely anonymous — let's talk 💙</p>
+
+    <div class="header">
+      <img src="https://picsum.photos/seed/tree/80" alt="Venky" class="avatar"/>
+      <span class="username">@canfcku2</span>
+      <p class="header-msg">let me know before it all ends !</p>
+    </div>
+
+    <textarea id="message" placeholder="Type something you never said..."></textarea>
+    <button id="sendBtn" disabled>Send</button>
+
+    <div class="reaction-text">How do you feel about Venky? (anonymous)</div>
+    <div class="reactions">
+      😡 😤 😐 🙂 😊 😍 🥰 ❤️
+    </div>
+  </div>
+
+  <button id="liveChatBtn" class="live-chat-btn">💬 Chat with Venky Live</button>
+  <button id="closeBtn" class="close-btn">Go back to Instagram</button>
+
+  <div id="namePopup" class="popup hidden">
+    <p><span class="star">*</span> Name (completely anonymous):</p>
+    <input id="nameInput" placeholder="Enter any name"/>
+    <button id="submitName">Submit</button>
+  </div>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="livechat.js"></script>
 </body>
 </html>
