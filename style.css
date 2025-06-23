@@ -145,3 +145,53 @@ body {
 .hidden {
   display: none;
 }
+#chat-section {
+  max-width: 100%;
+  margin-top: 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.chat-box {
+  height: 250px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input-area input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.chat-input-area button {
+  padding: 10px 15px;
+  background: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.my-msg {
+  text-align: right;
+  color: green;
+  margin-bottom: 8px;
+}
+
+.their-msg {
+  text-align: left;
+  color: #444;
+  margin-bottom: 8px;
+}
